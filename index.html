@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إيباء ستور برو - لوحة التحكم</title>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2><i class="fa-solid fa-store"></i> إيباء ستور برو</h2>
+                <button id="close-sidebar" class="mobile-only"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="dashboard"><i class="fa-solid fa-chart-pie"></i> الإحصائيات</a>
+                <a href="#" class="nav-item" data-target="inventory"><i class="fa-solid fa-box-open"></i> المخزون</a>
+                <a href="#" class="nav-item" data-target="create-order"><i class="fa-solid fa-cart-plus"></i> إنشاء طلبية</a>
+                <a href="#" class="nav-item" data-target="order-status"><i class="fa-solid fa-truck-fast"></i> حالة الطلبيات</a>
+                <a href="#" class="nav-item" data-target="finance"><i class="fa-solid fa-wallet"></i> المالية</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top Header -->
+            <header class="top-header">
+                <button id="toggle-sidebar" class="mobile-only"><i class="fa-solid fa-bars"></i></button>
+                <div class="user-info">
+                    <span>مرحباً، المشرف</span>
+                    <i class="fa-solid fa-circle-user fa-2x"></i>
+                </div>
+            </header>
+
+            <!-- Sections Container -->
+            <div class="sections-container">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="view-section active">
+                    <h1 class="section-title">نظرة عامة على الإحصائيات</h1>
+                    <div class="metrics-grid">
+                        <div class="metric-card bg-primary text-white">
+                            <i class="fa-solid fa-boxes-stacked fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>الطلبيات المسلمة</h3>
+                                <p id="dash-delivered-count">0</p>
+                            </div>
+                        </div>
+                        <div class="metric-card bg-danger text-white">
+                            <i class="fa-solid fa-rotate-left fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>الطلبيات الراجعة</h3>
+                                <p id="dash-returned-count">0</p>
+                            </div>
+                        </div>
+                        <div class="metric-card bg-success text-white">
+                            <i class="fa-solid fa-money-bill-trend-up fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>إجمالي الإيراد</h3>
+                                <p id="dash-total-revenue">0 د.ل</p>
+                            </div>
+                        </div>
+                        <div class="metric-card bg-warning text-dark">
+                            <i class="fa-solid fa-piggy-bank fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>إجمالي المكسب</h3>
+                                <p id="dash-total-profit">0 د.ل</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-details">
+                        <div class="chart-container card">
+                            <h3>المكسب عبر الأسابيع</h3>
+                            <canvas id="profitChart"></canvas>
+                        </div>
+                        <div class="top-products card">
+                            <h3>أفضل المنتجات</h3>
+                            <div class="top-product-item">
+                                <span class="badge">الأكثر مكسباً</span>
+                                <strong id="best-profit-product">جاري التحميل...</strong>
+                            </div>
+                            <div class="top-product-item mt-3">
+                                <span class="badge bg-secondary">الأكثر طلباً</span>
+                                <strong id="most-requested-product">جاري التحميل...</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Inventory Section -->
+                <section id="inventory" class="view-section d-none">
+                    <div class="section-header">
+                        <h1 class="section-title">إدارة المخزون</h1>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="window.inventoryModule.openAddModal()"><i class="fa-solid fa-plus"></i> إضافة منتج</button>
+                            <button class="btn btn-success" onclick="window.excelModule.triggerFileInput()"><i class="fa-solid fa-file-excel"></i> استيراد Excel</button>
+                            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display: none;">
+                        </div>
+                    </div>
+
+                    <div class="filters-bar card">
+                        <input type="text" id="search-inventory" placeholder="ابحث بالاسم أو الكود..." class="form-control">
+                        <select id="filter-category" class="form-control">
+                            <option value="all">جميع الأقسام</option>
+                            <option value="ملابس">ملابس</option>
+                            <option value="منزل">منزل</option>
+                            <option value="حقائب">حقائب</option>
+                            <option value="اكسسوارات">اكسسوارات</option>
+                            <option value="مكياج">مكياج</option>
+                            <option value="أفراح">أفراح</option>
+                            <option value="موبايل">موبايل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div class="products-grid" id="products-container">
+                        <!-- Products will be injected here via JS -->
+                        <div class="loading-state">جاري تحميل المنتجات...</div>
+                    </div>
+                </section>
+
+                <!-- Create Order Section -->
+                <section id="create-order" class="view-section d-none">
+                    <h1 class="section-title">إنشاء طلبية جديدة</h1>
+                    <div class="order-layout">
+                        <!-- Products Selection -->
+                        <div class="order-products-selection card">
+                            <h3>اختيار المنتجات</h3>
+                            <input type="text" id="search-order-products" placeholder="ابحث عن منتج..." class="form-control mb-3">
+                            <div class="order-products-list" id="order-products-list">
+                                <!-- Products for order -->
+                            </div>
+                        </div>
+                        
+                        <!-- Order Details (Cart & Customer Info) -->
+                        <div class="order-details-form card">
+                            <h3>تفاصيل الطلبية</h3>
+                            <div class="selected-items" id="selected-order-items">
+                                <!-- Selected items will appear here -->
+                                <p class="text-muted text-center" id="empty-cart-msg">لم يتم اختيار منتجات بعد</p>
+                            </div>
+                            
+                            <hr>
+                            
+                            <div class="customer-info mt-3">
+                                <h4>بيانات الزبون</h4>
+                                <div class="form-group">
+                                    <label>الاسم</label>
+                                    <input type="text" id="customer-name" class="form-control" placeholder="اسم الزبون" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>رقم الهاتف</label>
+                                    <input type="tel" id="customer-phone" class="form-control" placeholder="09X0000000" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>العنوان</label>
+                                    <textarea id="customer-address" class="form-control" placeholder="المدينة، المنطقة..." rows="2" required></textarea>
+                                </div>
+                            </div>
+
+                            <hr>
+                            
+                            <div class="order-summary mt-3">
+                                <div class="summary-row">
+                                    <span>الإجمالي:</span>
+                                    <strong id="order-total-price">0 د.ل</strong>
+                                </div>
+                                <div class="summary-row text-success">
+                                    <span>المكسب المتوقع:</span>
+                                    <strong id="order-total-profit">0 د.ل</strong>
+                                </div>
+                                <button class="btn btn-primary btn-block mt-3" id="save-order-btn">حفظ الطلبية</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Order Status Section -->
+                <section id="order-status" class="view-section d-none">
+                    <h1 class="section-title">حالة الطلبيات</h1>
+                    
+                    <div class="filters-bar card">
+                        <select id="filter-order-status" class="form-control">
+                            <option value="all">جميع الحالات</option>
+                            <option value="new">جديد</option>
+                            <option value="قيد المراجعة">قيد المراجعة</option>
+                            <option value="تم التسليم">تم التسليم</option>
+                            <option value="راجع">راجع / متعذر التسليم</option>
+                        </select>
+                        <input type="text" id="search-orders" placeholder="ابحث برقم الطلبية أو الهاتف..." class="form-control">
+                    </div>
+
+                    <div class="table-responsive card mt-3">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>رقم الطلبية</th>
+                                    <th>الزبون</th>
+                                    <th>الهاتف</th>
+                                    <th>الإجمالي</th>
+                                    <th>الحالة</th>
+                                    <th>التاريخ</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orders-table-body">
+                                <tr><td colspan="7" class="text-center">جاري تحميل الطلبيات...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Finance Section -->
+                <section id="finance" class="view-section d-none">
+                     <h1 class="section-title">المالية والمصروفات</h1>
+                     
+                     <div class="finance-overview">
+                         <div class="metric-card bg-success text-white">
+                            <i class="fa-solid fa-arrow-turn-down fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>إجمالي الوارد</h3>
+                                <p id="finance-total-income">0 د.ل</p>
+                                <small>من الطلبيات المسلمة فقط</small>
+                            </div>
+                        </div>
+                        <div class="metric-card bg-info text-dark">
+                            <i class="fa-solid fa-sack-dollar fa-2x"></i>
+                            <div class="metric-info">
+                                <h3>المكسب الفعلي (المتبقي)</h3>
+                                <p id="finance-actual-profit">0 د.ل</p>
+                                <small>المكسب - المصروفات</small>
+                            </div>
+                        </div>
+                     </div>
+
+                     <div class="expenses-section mt-4">
+                         <div class="section-header">
+                            <h2>سجل المصروفات</h2>
+                            <button class="btn btn-danger" onclick="window.financeModule.openExpenseModal()"><i class="fa-solid fa-minus"></i> إضافة مصروف</button>
+                         </div>
+                         
+                         <div class="table-responsive card mt-3">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>القيمة</th>
+                                        <th>التاريخ</th>
+                                        <th>ملاحظات</th>
+                                        <th>إجراء</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="expenses-table-body">
+                                    <tr><td colspan="5" class="text-center">لا توجد مصروفات مسجلة</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                     </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Add/Edit Product Modal -->
+    <div id="product-modal" class="modal-overlay d-none">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="product-modal-title">إضافة منتج جديد</h3>
+                <button class="close-modal" onclick="window.inventoryModule.closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="product-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>اسم المنتج *</label>
+                            <input type="text" id="prod-name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>الكود *</label>
+                            <input type="text" id="prod-code" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>القسم *</label>
+                            <select id="prod-category" class="form-control" required>
+                                <option value="ملابس">ملابس</option>
+                                <option value="منزل">منزل</option>
+                                <option value="حقائب">حقائب</option>
+                                <option value="اكسسوارات">اكسسوارات</option>
+                                <option value="مكياج">مكياج</option>
+                                <option value="أفراح">أفراح</option>
+                                <option value="موبايل">موبايل</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>اللون</label>
+                            <input type="text" id="prod-color" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>الكمية *</label>
+                            <input type="number" id="prod-qty" class="form-control" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>رابط الصورة</label>
+                            <input type="url" id="prod-image" class="form-control" placeholder="https://...">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>سعر التكلفة *</label>
+                            <input type="number" id="prod-cost" class="form-control" min="0" step="0.5" required>
+                        </div>
+                        <div class="form-group">
+                            <label>سعر البيع *</label>
+                            <input type="number" id="prod-price" class="form-control" min="0" step="0.5" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block mt-3">حفظ المنتج</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="expense-modal" class="modal-overlay d-none">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3>إضافة مصروف جديد</h3>
+                <button class="close-modal" onclick="window.financeModule.closeExpenseModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label>اسم المصروف *</label>
+                        <input type="text" id="exp-title" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>القيمة (د.ل) *</label>
+                        <input type="number" id="exp-amount" class="form-control" min="0.5" step="0.5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>التاريخ *</label>
+                        <input type="date" id="exp-date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات (اختياري)</label>
+                        <textarea id="exp-note" class="form-control" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger btn-block mt-3">حفظ المصروف</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="order-view-modal" class="modal-overlay d-none">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>تفاصيل الطلبية #<span id="view-order-id"></span></h3>
+                <button class="close-modal" onclick="document.getElementById('order-view-modal').classList.add('d-none')"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" id="view-order-details-content">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/utils.js"></script>
+    <script type="module" src="js/inventory.js"></script>
+    <script type="module" src="js/excel-import.js"></script>
+    <script type="module" src="js/orders.js"></script>
+    <script type="module" src="js/order-status.js"></script>
+    <script type="module" src="js/finance.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
