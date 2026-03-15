@@ -106,7 +106,8 @@ const renderChart = (labels, data) => {
             maintainAspectRatio: false,
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
                 }
             },
             plugins: {
