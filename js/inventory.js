@@ -65,9 +65,9 @@ const renderProducts = (products) => {
                 </div>
             </div>
             <div class="product-actions">
-                <div class="qty-controls">
-                    <button class="qty-btn bg-danger text-white rounded" title="حذف المنتج" onclick="window.inventoryModule.deleteProduct('${product.id}')">
-                        <i class="fa-solid fa-trash-can"></i>
+                <div class="qty-controls" style="border: none; background: transparent;">
+                    <button class="btn btn-sm btn-outline text-danger" title="حذف المنتج" onclick="window.inventoryModule.deleteProduct('${product.id}')">
+                        <i class="fa-solid fa-trash-can"></i> حذف
                     </button>
                 </div>
                 <div class="qty-controls">
