@@ -42,18 +42,51 @@ const renderOrderProducts = (products) => {
         return;
     }
 
+    // Group products by category
+    const categorizedProducts = {};
     products.forEach(product => {
-        const div = document.createElement('div');
-        div.className = 'order-item-card';
-        div.innerHTML = `
-            <strong>${product.name}</strong>
-            <div class="text-muted small">${product.code}</div>
-            <div class="text-primary mt-1">${formatCurrency(product.sellPrice)}</div>
-            <div class="text-success small">متاح: ${product.quantity}</div>
-        `;
-        div.onclick = () => addToCart(product);
-        container.appendChild(div);
+        const cat = product.category || 'أخرى';
+        if (!categorizedProducts[cat]) categorizedProducts[cat] = [];
+        categorizedProducts[cat].push(product);
     });
+
+    // Render each category
+    for (const [category, catProducts] of Object.entries(categorizedProducts)) {
+        const catGroup = document.createElement('div');
+        catGroup.className = 'order-category-group';
+        
+        const catTitle = document.createElement('div');
+        catTitle.className = 'order-category-title';
+        catTitle.textContent = category;
+        catGroup.appendChild(catTitle);
+
+        const catGrid = document.createElement('div');
+        catGrid.className = 'order-category-grid';
+
+        catProducts.forEach(product => {
+            const div = document.createElement('div');
+            div.className = 'order-item-card';
+            
+            const imageHtml = product.image 
+                ? `<img src="${product.image}" class="order-item-image" alt="صورة المنتج">`
+                : `<div class="order-item-image-placeholder"><i class="fa-solid fa-image"></i></div>`;
+
+            div.innerHTML = `
+                ${imageHtml}
+                <div class="order-item-details">
+                    <strong>${product.name}</strong>
+                    <div class="text-muted small">${product.code}</div>
+                    <div class="text-primary mt-1">${formatCurrency(product.sellPrice)}</div>
+                    <div class="text-success small">متاح: ${product.quantity}</div>
+                </div>
+            `;
+            div.onclick = () => addToCart(product);
+            catGrid.appendChild(div);
+        });
+
+        catGroup.appendChild(catGrid);
+        container.appendChild(catGroup);
+    }
 };
 
 const addToCart = (product) => {
