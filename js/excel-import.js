@@ -102,12 +102,6 @@ const processExcelData = async (rows) => {
             continue;
         }
 
-        // Duplicate code checking
-        if (existingCodes.includes(code)) {
-            skippedCodes++;
-            continue;
-        }
-
         try {
             const newProductRef = push(productsRef);
             await set(newProductRef, {
@@ -121,7 +115,6 @@ const processExcelData = async (rows) => {
                 sellPrice,
                 createdAt: Date.now()
             });
-            existingCodes.push(code); // Add to local array so we block dupes within the same file!
             successCount++;
         } catch (err) {
             console.error(err);
@@ -130,7 +123,6 @@ const processExcelData = async (rows) => {
     }
 
     let msg = `تم استيراد ${successCount} منتج بنجاح.`;
-    if (skippedCodes > 0) msg += `\nتم تجاهل ${skippedCodes} منتج (كود مكرر).`;
     if (failedCount > 0) msg += `\nيوجد ${failedCount} صف غير صالح أو تالف.`;
 
     if (successCount > 0) {
