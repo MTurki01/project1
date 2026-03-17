@@ -89,7 +89,8 @@ body {
     padding: 1.5rem;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
-    transition: box-shadow var(--transition-speed);
+    transition: box-shadow var(--transition-speed), background-color var(--transition-speed);
+    color: var(--text-main);
 }
 .card:hover {
     box-shadow: var(--shadow-md);
@@ -128,12 +129,13 @@ body {
     font-size: 1rem;
     transition: border-color var(--transition-speed);
     background-color: var(--light-color);
+    color: var(--text-main);
 }
 .form-control:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
-    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(108, 67, 112, 0.15); /* matching primary theme */
+    background-color: var(--card-bg);
 }
 .form-group {
     margin-bottom: 1rem;
@@ -331,7 +333,12 @@ body {
     gap: 1.5rem;
 }
 .chart-container {
-    min-height: 300px;
+    height: 300px; /* Fixed height to prevent infinite flex-loop */
+    position: relative;
+    width: 100%;
+}
+.chart-container canvas {
+    max-height: 100%;
 }
 .top-product-item {
     background: var(--bg-main);
@@ -362,13 +369,14 @@ body {
     gap: 1.5rem;
 }
 .product-card {
-    background: #fff;
+    background: var(--card-bg);
     border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
+    color: var(--text-main);
 }
 .product-image {
     width: 100%;
@@ -425,7 +433,7 @@ body {
 }
 .product-actions {
     padding: 1rem;
-    background-color: #fafafa;
+    background-color: var(--block-bg);
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
@@ -435,7 +443,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: #fff;
+    background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 3px 10px;
@@ -501,10 +509,11 @@ body {
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    background: #fff;
+    background: var(--card-bg);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    color: var(--text-main);
 }
 .order-item-image {
     width: 100%;
@@ -582,6 +591,7 @@ body {
     padding: 1rem;
     text-align: right; /* RTL */
     border-bottom: 1px solid var(--border-color);
+    color: var(--text-main);
 }
 .data-table th {
     background-color: var(--light-color);
