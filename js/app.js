@@ -67,9 +67,37 @@ const initNavigation = () => {
     }
     
     // Auto-close open modals when clicking outside modal content
-    window.onclick = (event) => {
+    window.addEventListener('click', (event) => {
         if (event.target.classList.contains('modal-overlay')) {
             event.target.classList.add('d-none');
         }
-    };
+    });
+
+    // Theme Toggle Logic
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const themeIcon = themeToggleBtn.querySelector('i');
+    
+    // Check saved theme
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeIcon(savedTheme, themeIcon);
+
+    themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        
+        document.documentElement.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateThemeIcon(newTheme, themeIcon);
+    });
+};
+
+const updateThemeIcon = (theme, iconElement) => {
+    if (theme === 'dark') {
+        iconElement.classList.remove('fa-moon');
+        iconElement.classList.add('fa-sun');
+    } else {
+        iconElement.classList.remove('fa-sun');
+        iconElement.classList.add('fa-moon');
+    }
 };
