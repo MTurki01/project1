@@ -2,9 +2,9 @@
    CSS Variables & Reset
    ========================================================================== */
    :root {
-    --primary-color: #4361ee;
-    --primary-light: #4895ef;
-    --secondary-color: #3f37c9;
+    --primary-color: #6C4370;
+    --primary-light: #87588A;
+    --secondary-color: #9F6D99;
     --success-color: #2ecc71;
     --danger-color: #e74c3c;
     --warning-color: #f1c40f;
@@ -14,14 +14,32 @@
     --border-color: #e0e0e0;
     --text-main: #333333;
     --text-muted: #8d99ae;
-    --bg-main: #f4f6f9;
+    --bg-main: #E0C9C9;
     --sidebar-bg: #fff;
     --card-bg: #fff;
+    --block-bg: #B78AA7;
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
     --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
     --border-radius: 12px;
     --transition-speed: 0.3s;
+}
+
+[data-theme="dark"] {
+    --primary-color: #87588A;
+    --primary-light: #9F6D99;
+    --secondary-color: #B78AA7;
+    --dark-color: #f8f9fa;
+    --light-color: #2b2d42;
+    --border-color: #444;
+    --text-main: #f4f6f9;
+    --text-muted: #adb5bd;
+    --bg-main: #1a1a1a;
+    --sidebar-bg: #222;
+    --card-bg: #222;
+    --block-bg: #333;
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.3);
 }
 
 * {
@@ -145,6 +163,18 @@ body {
     color: white;
 }
 
+.theme-toggle {
+    background: none;
+    border: none;
+    color: var(--dark-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color var(--transition-speed);
+}
+.theme-toggle:hover {
+    color: var(--primary-color);
+}
+
 /* ==========================================================================
    Layout Structure
    ========================================================================== */
@@ -159,7 +189,7 @@ body {
     background-color: var(--sidebar-bg);
     box-shadow: var(--shadow-md);
     flex-shrink: 0;
-    z-index: 100;
+    z-index: 1000;
     transition: transform 0.3s ease;
 }
 .sidebar-header {
@@ -655,9 +685,10 @@ body {
 @media (max-width: 768px) {
     .sidebar {
         position: fixed;
-        left: 100%; /* RTL: start offscreen right */
+        left: 0; /* Changed from 100% logic to fix RTL bug */
         transform: translateX(100%);
         height: 100vh;
+        z-index: 2000;
     }
     .sidebar.open {
         transform: translateX(0);
