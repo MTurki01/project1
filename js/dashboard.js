@@ -107,7 +107,9 @@ const renderChart = (labels, data) => {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { precision: 0 }
+                    ticks: {
+                        precision: 0
+                    }
                 }
             },
             plugins: {
