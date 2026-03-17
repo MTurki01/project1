@@ -47,7 +47,7 @@ const initNavigation = () => {
             }
 
             // Close sidebar on mobile after click
-            if (window.innerWidth <= 768) {
+            if (sidebar) {
                 sidebar.classList.remove('open');
             }
         });
