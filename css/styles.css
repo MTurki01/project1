@@ -641,7 +641,7 @@ body {
     transition: opacity 0.3s;
 }
 .modal-content {
-    background: #fff;
+    background: var(--card-bg);
     width: 90%;
     max-width: 600px;
     border-radius: var(--border-radius);
@@ -662,7 +662,7 @@ body {
     align-items: center;
     position: sticky;
     top: 0;
-    background: #fff;
+    background: var(--card-bg);
     z-index: 10;
 }
 .modal-header h3 {
